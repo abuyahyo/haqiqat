@@ -421,6 +421,116 @@ applyFontScale(getFontScale());
 // =============================================
 var cur = null, filtered = QS, activeBabIdx = null, searchQuery = '';
 
+// =============================================
+// URL ROUTING (hash-asosida)
+// =============================================
+// Hash sxemasi:
+//   #/                       — bosh sahifa
+//   #/muqaddima              — Muqaddima
+//   #/xotima                 — Xotima
+//   #/kutub                  — Tavsiya kitoblar
+//   #/qism/M                 — Qism (M = 1-asosli indeks)
+//   #/qism/M/savol/N         — Qism ichidagi savol (prev/next qism ichida)
+//   #/savol/N                — Global savol (prev/next butun ro'yxat)
+var routingInProgress = false;
+
+function getStateHash() {
+  if (document.getElementById('article').classList.contains('on')) {
+    var q = filtered[cur];
+    if (!q) return '#/';
+    if (activeBabIdx !== null) return '#/qism/' + (activeBabIdx + 1) + '/savol/' + q.num;
+    return '#/savol/' + q.num;
+  }
+  if (document.getElementById('muqArticle').style.display === 'block') return '#/muqaddima';
+  if (document.getElementById('xotimaArticle').style.display === 'block') return '#/xotima';
+  if (document.getElementById('kutubArticle').style.display === 'block') return '#/kutub';
+  if (activeBabIdx !== null) return '#/qism/' + (activeBabIdx + 1);
+  return '#/';
+}
+
+function pushHash() {
+  if (routingInProgress) return;
+  var target = getStateHash();
+  var current = location.hash || '#/';
+  if (current !== target) {
+    if (history.pushState) {
+      history.pushState({}, '', target);
+    } else {
+      location.hash = target;
+    }
+  }
+}
+
+function highlightNcard(idx) {
+  var ncards = document.querySelectorAll('.ncard');
+  ncards.forEach(function(b) { b.classList.remove('on'); });
+  if (idx != null && ncards[idx]) ncards[idx].classList.add('on');
+}
+
+function applyHash() {
+  routingInProgress = true;
+  try {
+    var hash = location.hash || '#/';
+    var m;
+
+    if ((m = hash.match(/^#\/qism\/(\d+)\/savol\/(\d+)$/))) {
+      var partIdx = parseInt(m[1], 10) - 1;
+      var num = parseInt(m[2], 10);
+      if (partIdx >= 0 && partIdx < BABS.length) {
+        activeBabIdx = partIdx;
+        searchQuery = '';
+        document.getElementById('searchInp').value = '';
+        document.getElementById('searchInpPart').value = '';
+        applyFilters();
+        var idx = filtered.findIndex(function(q) { return q.num === num; });
+        if (idx !== -1) { show(idx); return; }
+      }
+      goHome(); return;
+    }
+
+    if ((m = hash.match(/^#\/savol\/(\d+)$/))) {
+      var num2 = parseInt(m[1], 10);
+      activeBabIdx = null;
+      searchQuery = '';
+      document.getElementById('searchInp').value = '';
+      document.getElementById('searchInpPart').value = '';
+      filtered = QS;
+      var idx2 = QS.findIndex(function(q) { return q.num === num2; });
+      if (idx2 !== -1) { show(idx2); return; }
+      goHome(); return;
+    }
+
+    if ((m = hash.match(/^#\/qism\/(\d+)$/))) {
+      var partIdx2 = parseInt(m[1], 10) - 1;
+      if (partIdx2 >= 0 && partIdx2 < BABS.length) {
+        document.getElementById('article').classList.remove('on');
+        document.getElementById('xotimaArticle').style.display = 'none';
+        document.getElementById('kutubArticle').style.display = 'none';
+        document.getElementById('muqArticle').style.display = 'none';
+        document.getElementById('home').classList.remove('hide');
+        highlightNcard(partIdx2 + 1); // muq is index 0, parts start at 1
+        activeBabIdx = partIdx2;
+        searchQuery = '';
+        applyFilters();
+        setDocTitle(BABS[partIdx2]);
+        return;
+      }
+      goHome(); return;
+    }
+
+    if (hash === '#/muqaddima') { openMuq(null); return; }
+    if (hash === '#/xotima')    { openXotima(null); return; }
+    if (hash === '#/kutub')     { openKutub(null); return; }
+
+    // Bosh sahifa (#/, # yoki noma'lum)
+    goHome();
+  } finally {
+    routingInProgress = false;
+  }
+}
+
+window.addEventListener('hashchange', applyHash);
+
 // Ишончли тарзда саҳифанинг энг тепасига олиб чиқувчи функция
 function scrollToTop() {
   var html = document.documentElement;
@@ -576,6 +686,7 @@ function backToNav() {
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   window.scrollTo(0, 0);
   applyFilters();
+  pushHash();
 }
 
 var BASE_TITLE = 'Шубҳалар пардаси ортидаги ҳақиқат — Исмоил Дилмурод ўғли';
@@ -604,6 +715,7 @@ function show(idx) {
   setDocTitle('Савол ' + q.num + ': ' + q.title);
   window.scrollTo(0, 0);
   updateNav();
+  pushHash();
 }
 
 function goToBab(idx) {
@@ -621,8 +733,11 @@ function goToBab(idx) {
   document.getElementById('muqArticle').style.display = 'none';
   document.getElementById('home').classList.remove('hide');
   document.getElementById('prog').style.width = '0';
+  highlightNcard(idx + 1);
+  setDocTitle(BABS[idx]);
   window.scrollTo(0, 0);
   applyFilters();
+  pushHash();
 }
 
 function goHome() {
@@ -644,6 +759,7 @@ function goHome() {
   setDocTitle('');
   applyFilters();
   window.scrollTo(0, 0);
+  pushHash();
 }
 
 function nav(dir) {
@@ -704,15 +820,20 @@ function filterBab(idx, el) {
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   if (isOff) {
     activeBabIdx = null;
+    setDocTitle('');
   } else {
     el.classList.add('on');
     activeBabIdx = idx;
+    setDocTitle(BABS[idx]);
   }
   window.scrollTo(0, 0);
   applyFilters();
+  pushHash();
 }
 
 render();
+// Boshlang'ich URL hash'ni qo'llash (sahifa ochilganda yoki to'g'ridan-to'g'ri havoladan kirilganda)
+applyHash();
 
 function openXotima(el) {
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
@@ -730,6 +851,7 @@ function openXotima(el) {
   document.getElementById('muqArticle').style.display = 'none';
   setDocTitle('Хотима');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  pushHash();
 }
 
 function openKutub(el) {
@@ -748,6 +870,7 @@ function openKutub(el) {
   document.getElementById('muqArticle').style.display = 'none';
   setDocTitle('Тавсия этилган китоблар');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  pushHash();
 }
 
 function closeExtra(id) {
@@ -756,6 +879,7 @@ function closeExtra(id) {
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   setDocTitle('');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  pushHash();
 }
 
 function openLb(src) {
@@ -784,6 +908,7 @@ function openMuq(el) {
   document.getElementById('kutubArticle').style.display = 'none';
   setDocTitle('Муқаддима');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  pushHash();
 }
 
 function closeMuq() {
@@ -794,6 +919,7 @@ function closeMuq() {
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   setDocTitle('');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  pushHash();
 }
 </script>
 </body>
