@@ -77,7 +77,8 @@ body.light-theme .logo{animation:glow-light 5s ease-in-out infinite}
 
 /* Навигация карточкалари */
 .nav-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:960px;margin:0 auto 28px;padding:0 20px}
-.nav-cards .ncard:last-child{grid-column:1 / -1}
+.nav-cards .ncard:first-child,.nav-cards .ncard:last-child{grid-column:1 / -1;background:linear-gradient(135deg,var(--surf) 0%,rgba(201,168,76,.04) 100%)}
+.nav-cards .ncard:first-child .ncard-title,.nav-cards .ncard:last-child .ncard-title{font-size:20px}
 .ncard{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:20px 22px 16px;cursor:pointer;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s;position:relative;overflow:hidden;text-align:left;font-family:"PT Sans",sans-serif}
 .ncard::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}
 .ncard:hover{border-color:rgba(201,168,76,.4);background:var(--surf2);box-shadow:var(--sh);transform:translateY(-2px)}
@@ -90,9 +91,7 @@ body.light-theme .logo{animation:glow-light 5s ease-in-out infinite}
 .ncard-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
 .ncard-arrow{margin-top:12px;font-size:16px;color:var(--goldd);text-align:right;transition:color .2s,transform .2s;display:block}
 .ncard:hover .ncard-arrow{color:var(--gold);transform:translateX(5px)}
-.ncard.part{grid-column:1 / -1;background:linear-gradient(135deg,var(--surf) 0%,rgba(201,168,76,.04) 100%)}
 .ncard.part .ncard-icon{font-size:30px}
-.ncard.part .ncard-title{font-size:20px}
 .ncard-part-label{font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
 .back-to-nav{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--gold);cursor:pointer;border:1.5px solid var(--gold);background:transparent;padding:8px 20px;border-radius:24px;font-family:"PT Sans",sans-serif;transition:all .2s;margin:0 20px 18px;font-weight:600}
 .back-to-nav:hover{color:var(--bg);border-color:var(--gold);background:var(--gold)}
@@ -751,18 +750,13 @@ window.onscroll = function() {
 // Навигация карточкалари
 function rebuildNavCards() {
   var bh = '';
-  // Muqaddima va Xotima — yuqorida bir qatorda juftlik (intro + outro)
+  // Muqaddima — yuqorida full-width (:first-child)
   bh += '<button type="button" class="ncard" onclick="openMuq(this)" aria-label="Муқаддимани очиш">';
   bh += '  <div class="ncard-title">Муқаддима</div>';
   bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
   bh += '</button>';
 
-  bh += '<button type="button" class="ncard" onclick="openXotima(this)" aria-label="Хотимани очиш">';
-  bh += '  <div class="ncard-title">Хотима</div>';
-  bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
-  bh += '</button>';
-
-  // Қисмлар карточкалари (har biri full-width)
+  // Қисмлар — har biri yarim enlik, juftlik bo'lib turadi
   BABS.forEach(function(b, i) {
     var parts = b.split(':');
     var partLabel = escapeHtml(parts[0] || b);
@@ -774,9 +768,15 @@ function rebuildNavCards() {
     bh += '</button>';
   });
 
-  // Tavsiya kitoblar — eng pastda alohida (full-width via :last-child)
+  // Tavsiya kitoblar — qismlar bilan bir guruhda yarim enlik
   bh += '<button type="button" class="ncard" onclick="openKutub(this)" aria-label="Тавсия этилган китоблар рўйхатини очиш">';
   bh += '  <div class="ncard-title">Тавсия этилган китоблар</div>';
+  bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
+  bh += '</button>';
+
+  // Xotima — eng pastda full-width (:last-child)
+  bh += '<button type="button" class="ncard" onclick="openXotima(this)" aria-label="Хотимани очиш">';
+  bh += '  <div class="ncard-title">Хотима</div>';
   bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
   bh += '</button>';
 
