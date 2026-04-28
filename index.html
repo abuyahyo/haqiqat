@@ -90,13 +90,11 @@ body.light-theme .logo{animation:glow-light 5s ease-in-out infinite}
 .ncard:hover .ncard-title,.ncard.on .ncard-title{color:var(--gold)}
 .ncard-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
 .ncard.part .ncard-icon{font-size:30px}
-.ncard-part-label{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
 .back-to-nav{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--gold);cursor:pointer;border:1.5px solid var(--gold);background:transparent;padding:8px 20px;border-radius:24px;font-family:"PT Sans",sans-serif;transition:all .2s;margin:0 20px 18px;font-weight:700}
 .back-to-nav:hover{color:var(--bg);border-color:var(--gold);background:var(--gold)}
 body.light-theme .back-to-nav{background:#fff}
 body.light-theme .back-to-nav:hover{color:#fff;background:var(--gold)}
 .part-header{max-width:1260px;margin:0 auto 6px;padding:8px 20px 18px;border-bottom:1px solid var(--border)}
-.part-header-label{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
 .part-header-title{font-family:"PT Serif",serif;font-size:clamp(20px,3.2vw,28px);font-weight:700;color:var(--txt);line-height:1.4;margin-bottom:18px}
 .part-search-wrap{position:relative;max-width:480px;margin:0 0 10px}
 @media(max-width:580px){.back-to-nav{margin:0 12px 14px}.part-header{padding:4px 14px 16px}}
@@ -239,7 +237,6 @@ body.light-theme .scroll-top:hover{color:#fff}
   <nav class="nav-cards" id="navCards" aria-label="Бўлимлар бўйича навигация"></nav>
   <button class="back-to-nav" id="backToNav" onclick="backToNav()" style="display:none" aria-label="Бош саҳифага қайтиш"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;vertical-align:middle" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Бош саҳифа</button>
   <div class="part-header" id="partHeader" style="display:none">
-    <div class="part-header-label" id="partHeaderLabel"></div>
     <h2 class="part-header-title" id="partHeaderTitle"></h2>
     <div class="part-search-wrap" role="search">
       <label for="searchInpPart" class="visually-hidden">Саволлардан қидириш</label>
@@ -561,6 +558,12 @@ function clearSearch() {
 
 function normUz(s) { return (s || '').toLowerCase(); }
 
+function babTitleOnly(s) {
+  if (!s) return '';
+  var idx = s.indexOf(':');
+  return idx >= 0 ? s.substr(idx + 1).trim() : s;
+}
+
 function escapeHtml(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;')
@@ -600,7 +603,6 @@ function render() {
   if (inPart) {
     var babText = BABS[activeBabIdx];
     var parts = babText.split(':');
-    document.getElementById('partHeaderLabel').innerText = parts[0] || '';
     document.getElementById('partHeaderTitle').innerText = parts[1] ? parts[1].trim() : babText;
     partHeader.style.display = 'block';
   } else {
@@ -620,7 +622,7 @@ function render() {
   filtered.forEach(function(q, i) {
     // Агар фақат битта қисм танланган бўлса (излаш эмас), карточкада қисм номини такрорламаймиз
     var hideBab = (activeBabIdx !== null && !searchQuery);
-    var babHtml = hideBab ? '' : '<div class="cbab">' + escapeHtml(BABS[q.babIdx]) + '</div>';
+    var babHtml = hideBab ? '' : '<div class="cbab">' + escapeHtml(babTitleOnly(BABS[q.babIdx])) + '</div>';
     var titleEsc = escapeHtml(q.title);
     h += '<button type="button" class="card" onclick="show(' + i + ')" aria-label="Савол ' + q.num + ': ' + titleEsc + '">' + babHtml + '<div class="cnum">Савол ' + q.num + '</div><div class="ctitle">' + titleEsc + '</div></button>';
   });
@@ -658,7 +660,7 @@ function show(idx) {
   var q = filtered[idx];
   if (!q) return;
   var ababEl = document.getElementById('abab');
-  ababEl.innerText = BABS[q.babIdx];
+  ababEl.innerText = babTitleOnly(BABS[q.babIdx]);
   ababEl.setAttribute('data-bab', q.babIdx);
   ababEl.onclick = function() { goToBab(parseInt(this.getAttribute('data-bab'), 10)); };
   document.getElementById('anum').innerText = 'Савол ' + q.num;
@@ -754,12 +756,10 @@ function rebuildNavCards() {
   // Қисмлар — har biri yarim enlik, juftlik bo'lib turadi
   BABS.forEach(function(b, i) {
     var parts = b.split(':');
-    var partLabel = escapeHtml(parts[0] || b);
     var partTitle = escapeHtml(parts[1] ? parts[1].trim() : b);
-    bh += '<button type="button" class="ncard part" onclick="filterBab(' + i + ', this)" aria-label="' + partLabel + ': ' + partTitle + '">';
-    bh += '  <div class="ncard-part-label">' + partLabel + '</div>';
+    bh += '<button type="button" class="ncard part" onclick="filterBab(' + i + ', this)" aria-label="' + partTitle + '">';
     bh += '  <div class="ncard-title">' + partTitle + '</div>';
-      bh += '</button>';
+    bh += '</button>';
   });
 
   // Tavsiya kitoblar — qismlar bilan bir guruhda yarim enlik
