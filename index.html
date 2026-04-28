@@ -89,8 +89,6 @@ body.light-theme .logo{animation:glow-light 5s ease-in-out infinite}
 .ncard-title{font-family:"PT Serif",serif;font-size:17px;font-weight:700;color:var(--txt);line-height:1.45;margin-bottom:6px;transition:color .2s}
 .ncard:hover .ncard-title,.ncard.on .ncard-title{color:var(--gold)}
 .ncard-desc{font-size:12.5px;color:var(--muted);line-height:1.55}
-.ncard-arrow{margin-top:6px;font-size:16px;color:var(--goldd);text-align:right;transition:color .2s,transform .2s;display:block}
-.ncard:hover .ncard-arrow{color:var(--gold);transform:translateX(5px)}
 .ncard.part .ncard-icon{font-size:30px}
 .ncard-part-label{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
 .back-to-nav{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--gold);cursor:pointer;border:1.5px solid var(--gold);background:transparent;padding:8px 20px;border-radius:24px;font-family:"PT Sans",sans-serif;transition:all .2s;margin:0 20px 18px;font-weight:700}
@@ -134,8 +132,6 @@ body.light-theme .anum{border-color:rgba(60,45,20,.2)}
 .cnum{font-size:12.5px;color:var(--muted);margin-bottom:6px}
 .ctitle{font-family:"PT Serif",serif;font-size:15px;font-weight:700;color:var(--txt);line-height:1.6;transition:color .2s}
 .card:hover .ctitle{color:var(--gold)}
-.carr{margin-top:8px;font-size:17px;color:var(--goldd);text-align:right;transition:color .2s,transform .2s;display:block}
-.card:hover .carr{color:var(--gold);transform:translateX(5px)}
 #article{display:none;position:relative;z-index:1}#article.on{display:block}#home.hide{display:none}
 .ahdr{max-width:760px;margin:0 auto;padding:24px 28px 0}
 .back{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--gold);cursor:pointer;border:1.5px solid var(--gold);background:transparent;padding:8px 20px;border-radius:24px;font-family:"PT Sans",sans-serif;transition:all .2s;margin-bottom:14px;font-weight:700}
@@ -626,7 +622,7 @@ function render() {
     var hideBab = (activeBabIdx !== null && !searchQuery);
     var babHtml = hideBab ? '' : '<div class="cbab">' + escapeHtml(BABS[q.babIdx]) + '</div>';
     var titleEsc = escapeHtml(q.title);
-    h += '<button type="button" class="card" onclick="show(' + i + ')" aria-label="Савол ' + q.num + ': ' + titleEsc + '">' + babHtml + '<div class="cnum">Савол ' + q.num + '</div><div class="ctitle">' + titleEsc + '</div><div class="carr" aria-hidden="true">→</div></button>';
+    h += '<button type="button" class="card" onclick="show(' + i + ')" aria-label="Савол ' + q.num + ': ' + titleEsc + '">' + babHtml + '<div class="cnum">Савол ' + q.num + '</div><div class="ctitle">' + titleEsc + '</div></button>';
   });
   document.getElementById('grid').innerHTML = h;
   document.getElementById('cnt').innerText = filtered.length + ' та мавзу';
@@ -753,7 +749,6 @@ function rebuildNavCards() {
   // Muqaddima — yuqorida full-width (:first-child)
   bh += '<button type="button" class="ncard" onclick="openMuq(this)" aria-label="Муқаддимани очиш">';
   bh += '  <div class="ncard-title">Муқаддима</div>';
-  bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
   bh += '</button>';
 
   // Қисмлар — har biri yarim enlik, juftlik bo'lib turadi
@@ -764,20 +759,17 @@ function rebuildNavCards() {
     bh += '<button type="button" class="ncard part" onclick="filterBab(' + i + ', this)" aria-label="' + partLabel + ': ' + partTitle + '">';
     bh += '  <div class="ncard-part-label">' + partLabel + '</div>';
     bh += '  <div class="ncard-title">' + partTitle + '</div>';
-    bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
-    bh += '</button>';
+      bh += '</button>';
   });
 
   // Tavsiya kitoblar — qismlar bilan bir guruhda yarim enlik
   bh += '<button type="button" class="ncard" onclick="openKutub(this)" aria-label="Тавсия этилган китоблар рўйхатини очиш">';
   bh += '  <div class="ncard-title">Тавсия этилган китоблар</div>';
-  bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
   bh += '</button>';
 
   // Xotima — eng pastda full-width (:last-child)
   bh += '<button type="button" class="ncard" onclick="openXotima(this)" aria-label="Хотимани очиш">';
   bh += '  <div class="ncard-title">Хотима</div>';
-  bh += '  <div class="ncard-arrow" aria-hidden="true">→</div>';
   bh += '</button>';
 
   document.getElementById('navCards').innerHTML = bh;
