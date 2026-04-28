@@ -96,7 +96,6 @@ body.light-theme .back-to-nav{background:#fff}
 body.light-theme .back-to-nav:hover{color:#fff;background:var(--gold)}
 .part-header{max-width:1260px;margin:0 auto 6px;padding:8px 20px 18px;border-bottom:1px solid var(--border)}
 .part-header-title{font-family:"PT Serif",serif;font-size:clamp(20px,3.2vw,28px);font-weight:700;color:var(--txt);line-height:1.4;margin-bottom:18px}
-.part-search-wrap{position:relative;margin:0 0 10px}
 @media(max-width:580px){.back-to-nav{margin:0 12px 14px}.part-header{padding:4px 14px 16px}}
 @media(max-width:580px){.nav-cards{grid-template-columns:1fr;padding:0 12px;gap:10px}}
 
@@ -238,12 +237,6 @@ body.light-theme .scroll-top:hover{color:#fff}
   <button class="back-to-nav" id="backToNav" onclick="backToNav()" style="display:none" aria-label="Бош саҳифага қайтиш"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;vertical-align:middle" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Бош саҳифа</button>
   <div class="part-header" id="partHeader" style="display:none">
     <h2 class="part-header-title" id="partHeaderTitle"></h2>
-    <div class="part-search-wrap" role="search">
-      <label for="searchInpPart" class="visually-hidden">Саволлардан қидириш</label>
-      <input class="search-inp" id="searchInpPart" type="search" placeholder="Саволлардан қидириш..." oninput="onSearch(this.value)" aria-label="Саволлардан қидириш">
-      <span class="search-icon" id="searchIconPart" aria-hidden="true">🔍</span>
-      <button class="search-clear" id="searchClearPart" onclick="clearSearch()" aria-label="Қидирувни тозалаш">✕</button>
-    </div>
     <div class="cnt" id="cnt" aria-live="polite"></div>
   </div>
   <div class="grid" id="grid" role="region" aria-label="Саволлар рўйхати"></div>
@@ -436,7 +429,6 @@ function applyHash() {
         activeBabIdx = partIdx;
         searchQuery = '';
         document.getElementById('searchInp').value = '';
-        document.getElementById('searchInpPart').value = '';
         applyFilters();
         var idx = filtered.findIndex(function(q) { return q.num === num; });
         if (idx !== -1) { show(idx); return; }
@@ -449,7 +441,6 @@ function applyHash() {
       activeBabIdx = null;
       searchQuery = '';
       document.getElementById('searchInp').value = '';
-      document.getElementById('searchInpPart').value = '';
       filtered = QS;
       var idx2 = QS.findIndex(function(q) { return q.num === num2; });
       if (idx2 !== -1) { show(idx2); return; }
@@ -533,26 +524,17 @@ function scrollToTop() {
 
 function onSearch(val) {
   searchQuery = val.trim();
-  var show = searchQuery ? 'block' : 'none';
-  var showIc = searchQuery ? 'none' : 'block';
-  document.getElementById('searchClear').style.display = show;
-  document.getElementById('searchIcon').style.display = showIc;
-  document.getElementById('searchClearPart').style.display = show;
-  document.getElementById('searchIconPart').style.display = showIc;
-  // Иккала излаш майдонини синхронлаш
+  document.getElementById('searchClear').style.display = searchQuery ? 'block' : 'none';
+  document.getElementById('searchIcon').style.display = searchQuery ? 'none' : 'block';
   if (document.getElementById('searchInp').value !== val) document.getElementById('searchInp').value = val;
-  if (document.getElementById('searchInpPart').value !== val) document.getElementById('searchInpPart').value = val;
   applyFilters();
 }
 
 function clearSearch() {
   document.getElementById('searchInp').value = '';
-  document.getElementById('searchInpPart').value = '';
   searchQuery = '';
   document.getElementById('searchClear').style.display = 'none';
   document.getElementById('searchIcon').style.display = 'block';
-  document.getElementById('searchClearPart').style.display = 'none';
-  document.getElementById('searchIconPart').style.display = 'block';
   applyFilters();
 }
 
@@ -639,11 +621,8 @@ function backToNav() {
   activeBabIdx = null;
   searchQuery = '';
   document.getElementById('searchInp').value = '';
-  document.getElementById('searchInpPart').value = '';
   document.getElementById('searchClear').style.display = 'none';
   document.getElementById('searchIcon').style.display = 'block';
-  document.getElementById('searchClearPart').style.display = 'none';
-  document.getElementById('searchIconPart').style.display = 'block';
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   window.scrollTo(0, 0);
   applyFilters();
@@ -683,11 +662,8 @@ function goToBab(idx) {
   activeBabIdx = idx;
   searchQuery = '';
   document.getElementById('searchInp').value = '';
-  document.getElementById('searchInpPart').value = '';
   document.getElementById('searchClear').style.display = 'none';
   document.getElementById('searchIcon').style.display = 'block';
-  document.getElementById('searchClearPart').style.display = 'none';
-  document.getElementById('searchIconPart').style.display = 'block';
   document.getElementById('article').classList.remove('on');
   document.getElementById('xotimaArticle').style.display = 'none';
   document.getElementById('kutubArticle').style.display = 'none';
@@ -705,11 +681,8 @@ function goHome() {
   activeBabIdx = null;
   searchQuery = '';
   document.getElementById('searchInp').value = '';
-  document.getElementById('searchInpPart').value = '';
   document.getElementById('searchClear').style.display = 'none';
   document.getElementById('searchIcon').style.display = 'block';
-  document.getElementById('searchClearPart').style.display = 'none';
-  document.getElementById('searchIconPart').style.display = 'block';
   document.querySelectorAll('.ncard').forEach(function(b) { b.classList.remove('on'); });
   document.getElementById('home').classList.remove('hide');
   document.getElementById('article').classList.remove('on');
