@@ -640,7 +640,7 @@ function show(idx) {
   var q = filtered[idx];
   if (!q) return;
   var ababEl = document.getElementById('abab');
-  ababEl.innerText = 'Қисм ' + (q.babIdx + 1);
+  ababEl.innerText = babTitleOnly(BABS[q.babIdx]);
   ababEl.setAttribute('data-bab', q.babIdx);
   ababEl.onclick = function() { goToBab(parseInt(this.getAttribute('data-bab'), 10)); };
   document.getElementById('anum').innerText = 'Савол ' + q.num;
