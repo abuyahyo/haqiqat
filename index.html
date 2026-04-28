@@ -56,7 +56,8 @@ body.light-theme {
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%}
 body{background:var(--bg);color:var(--txt);font-family:"PT Sans",sans-serif;min-height:100vh;overflow-x:hidden;max-width:100%;transition:background 0.3s,color 0.3s;}
 .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-button.card,button.ncard{font:inherit;color:inherit;text-align:left;width:100%;display:block}
+button.card{font:inherit;color:inherit;text-align:left;width:100%;display:block}
+button.ncard{font:inherit;color:inherit;text-align:center;width:100%;display:block}
 button.card:focus-visible,button.ncard:focus-visible,.theme-toggle:focus-visible,.back:focus-visible,.abab:focus-visible,.nbtn:focus-visible,.fc-btn:focus-visible,.back-to-nav:focus-visible,.scroll-top:focus-visible,.search-clear:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media(prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
@@ -79,7 +80,7 @@ body.light-theme .logo{animation:glow-light 5s ease-in-out infinite}
 .nav-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:960px;margin:0 auto 28px;padding:0 20px}
 .nav-cards .ncard:first-child,.nav-cards .ncard:last-child{grid-column:1 / -1;background:linear-gradient(135deg,var(--surf) 0%,rgba(201,168,76,.04) 100%)}
 .nav-cards .ncard:first-child .ncard-title,.nav-cards .ncard:last-child .ncard-title{font-size:18px}
-.ncard{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:14px 20px 12px;cursor:pointer;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s;position:relative;overflow:hidden;text-align:left;font-family:"PT Sans",sans-serif}
+.ncard{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:14px 20px 12px;cursor:pointer;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s;position:relative;overflow:hidden;text-align:center;font-family:"PT Sans",sans-serif}
 .ncard::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}
 .ncard:hover{border-color:rgba(201,168,76,.4);background:var(--surf2);box-shadow:var(--sh);transform:translateY(-2px)}
 .ncard:hover::before{opacity:1}
